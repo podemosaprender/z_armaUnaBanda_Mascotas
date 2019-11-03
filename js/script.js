@@ -12,15 +12,17 @@ var Productos = [ //U: la lista a mostrar, filtrar TODO: cargarla de un servidor
 
 //PodemosAprender: separe la busqueda en esta funcion _pura_ que hace siempre lo mismo para los mismos parametros, y no depende de nada externo
 // la ventaja es que asi las partes dificiles del codigo quedan muy faciles de probar con todos los casos posibles
+//TEST: filtrar(Productos,"cristobal",x => console.log(x), () => console.log("Done"))
 function filtrar(datos, texto, onElementFound, onDone) { //U: filtra un array de diccionarios devolviendo los que en "nombre" contienen "texto"
   for (let elemento of datos){ //TODO: por que no usar array filter?
     let nombre = elemento.nombre.toLowerCase();
-    if (nombre.indexOf(texto) !== -1) { onElementFound(elemento) } //A: pasamos el elemento a quien llamo
+    if (nombre.indexOf(texto) > -1) { onElementFound(elemento) } //A: pasamos el elemento a quien llamo
   }
   onDone(); //A: avisamos que termino la busqueda
 }
 
 //PodemosAprender: lo mismo, si lo escribo asi separado lo puedo probar ej. en la consola con perroComoLi[Productos[1]]
+//TEST: perroComoLi(Productos[1])
 function perroComoLi(e) { //U: devuelve los datos de un perro formateados para agregar a una ul u ol
   return `
       <li>${e.nombre} - animal: ${e.animal} - sexo: ${e.sexo} - raza: ${e.raza}</li>
@@ -30,13 +32,16 @@ function perroComoLi(e) { //U: devuelve los datos de un perro formateados para a
 var formulario = document.querySelector("#formulario");
 var boton = document.querySelector("#boton");
 var resultado= document.querySelector("#resultado");
-var OnFiltrar = ()=>{ //U: el event handler solo conecta UI input con funciones con UI output 
+var OnFiltrar = (evt)=>{ //U: el event handler solo conecta UI input con funciones con UI output 
+  evt.preventDefault(); //A: que no recargue la pagina, nosotros nos ocupamos del click aca mismo
   //console.log(formulario.value);
   resultado.innerHTML = "";
   const texto = formulario.value.toLowerCase();
+  console.log("OnFiltrar buscando texto='"+texto+"'");
   filtrar(Productos, texto, 
     e => { //U: encontre un elemento, lo muestro
-      resultado.innerHTML += perroComoLi(e)},
+      resultado.innerHTML += perroComoLi(e)
+    },
     () => { //U: termino la busqueda
       if (resultado.innerHTML === "") {
         resultado.innerHTML += `
